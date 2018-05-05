@@ -17,7 +17,6 @@ contract RSPLedger is usingOraclize {
      mapping (address => mapping(uint => uint [6])) rspchallengeValueList;
      mapping (address => mapping(uint => uint)) randomValueList;
      mapping (address => mapping(uint => uint )) leaderStat;
-     //mapping (address => mapping(uint => uint )) challengerStat;
      mapping (address => mapping(uint => uint )) rspStat;
 	 mapping (address => mapping(uint => uint )) bet;
 	 mapping (bytes32 => address) leaderAddr;
@@ -38,7 +37,6 @@ contract RSPLedger is usingOraclize {
 	}
 	function RSPLedger(address _whereToSendFee){
     	 whereToSendFee = _whereToSendFee;   
-    	 //oraclizeFee   = oraclize_getPrice("URL", ORACLIZE_GAS_LIMIT + safeGas);	
     } 
       
      function getLrCount() constant returns(uint){ return totalLrCount; }     
@@ -62,7 +60,6 @@ contract RSPLedger is usingOraclize {
 		rspleaderValueList[msg.sender][dateNow] = leaderValue;
 		bet[msg.sender][dateNow] = msg.value;
 		leaderStat[msg.sender][dateNow] = 1;
-		//challengerStat[msg.sender][dateNow] = 0;
 		leaderAdd__ = msg.sender;
 		contractKey[totalLrCount].myleaderAddress = msg.sender;
 		contractKey[totalLrCount].mydateNow = dateNow;
@@ -78,7 +75,6 @@ contract RSPLedger is usingOraclize {
 		if(leaderStat[_leaderAddr][_dateNow] != 1) revert();
 		if(msg.value != 0.5 ether && msg.value != 0.1 ether) revert();
         if(_challengerValue[0] == _challengerValue[1] || _challengerValue[2] == _challengerValue[3] || _challengerValue[4] == _challengerValue[5]) revert();
-        //bet[msg.sender][_dateNow] += msg.value;
         bet[_leaderAddr][_dateNow] += msg.value;
 		rspchallengeValueList[_leaderAddr][_dateNow] = _challengerValue;
 	    leaderStat[_leaderAddr][_dateNow]++; 	     
@@ -94,18 +90,12 @@ contract RSPLedger is usingOraclize {
     }    
     function setRandom(uint _randomValue, bytes32 _queryId) payable{
      randomValueList[leaderAddr[_queryId]][leaderKey[_queryId]] = _randomValue;
-   //  uint __leaderStat = leaderStat[leaderAddr[_queryId]][leaderKey[_queryId]];
-     //uint __challengerStat = challengerStat[leaderAddr[_queryId]][leaderKey[_queryId]];
      address rspleaderAddr = leaderAddr[_queryId];
      uint    rspleaderKey = leaderKey[_queryId];
      uint [6] rspleaderValueList_temp = rspleaderValueList[rspleaderAddr][leaderKey[_queryId]];
      uint [6] rspchallengeValueList_temp = rspchallengeValueList[rspleaderAddr][leaderKey[_queryId]];
      uint rspDateNow = leaderKey[_queryId];
 
-// 				if(msg.value >= 0.5 ether) {feeAmount = 0.03 ether;} else { feeAmount = 0.01 ether;} 
-// 				if(msg.value == 0.5 ether) {betAmount = 1 ether;} 
- //				  else if(msg.value == 0.1 ether) {betAmount = 0.2 ether;} 
- //				  else {revert();}
 				whereToSendFee.transfer(feeAmount);				
 				uint rst = getWhoWin(_randomValue, rspleaderValueList_temp, rspchallengeValueList_temp);
       	
@@ -118,7 +108,7 @@ contract RSPLedger is usingOraclize {
 		    		  rspStat[rspleaderAddr][rspleaderKey] = 5;			
 		    	}
 		    	else if(rst == 5){
-		    		//revert();
+		    		revert();
 		    	}	    	
 	 }
 	 
